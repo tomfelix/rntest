@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { StyleSheet, Text, TextInput, View, FlatList } from 'react-native';
 
 
 export default class App extends React.Component {
@@ -11,16 +11,32 @@ export default class App extends React.Component {
     };
   }
 
+  componentDidMount() {
+    fetch(`https://swapi.co/api/people`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          data: responseJson.results
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
 
 
   render() {
     return (
       <View style={styles.container}>
-        <TextInput value={this.state.term} onChangeText={(text) => this.setState({term: text})} placeholder="Put name here..."/>
+        <TextInput value={this.state.term} onSubmit={(text) => this.setState({term: text})} placeholder="Put name here..."/>
         <Text>{this.state.term}</Text>
-
-        <Text>Shake your phone to open the developer menu.</Text>
+        <Text>Star Wars heroes</Text>
+        <FlatList
+          data={this.state.data}
+          renderItem={({item}) => <Text>{item.name}: {item.height}cm</Text>}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
     );
   }
@@ -32,6 +48,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10
+    paddingTop: 50
   },
 });
